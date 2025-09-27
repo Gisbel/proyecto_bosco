@@ -15,6 +15,7 @@ import {
   Trash2,
   Archive,
   Timer,
+  User,
 } from "lucide-react"
 import { ProjectForm } from "./project-form"
 import Link from "next/link"
@@ -123,6 +124,13 @@ export function ProjectSidebar({ projects, selectedProject, onProjectSelect, onP
             <Button variant="ghost" className="w-full justify-start">
               <BarChart3 className="w-4 h-4 mr-2" />
               Estadísticas
+            </Button>
+          </Link>
+
+          <Link href="/profile">
+            <Button variant="ghost" className="w-full justify-start">
+              <User className="w-4 h-4 mr-2" />
+              Mi Perfil
             </Button>
           </Link>
 
