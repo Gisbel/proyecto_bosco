@@ -11,6 +11,7 @@ import { TaskForm } from "@/components/task-form"
 import { NavigationHeader } from "@/components/navigation-header"
 import { AuthGuard } from "@/components/auth-guard"
 import { useLocalStorage } from "@/hooks/use-local-storage"
+import { useRouter } from "next/navigation"
 
 interface Project {
   id: string
@@ -46,6 +47,7 @@ export default function TasksPage() {
   const [filterStatus, setFilterStatus] = useState<string>("all")
   const [filterPriority, setFilterPriority] = useState<string>("all")
   const [sortBy, setSortBy] = useState<string>("date")
+  const router = useRouter()
 
   // Filter and sort tasks
   const filteredTasks = tasks
@@ -115,6 +117,13 @@ export default function TasksPage() {
           : task,
       ),
     )
+  }
+
+  const handlePomodoroStart = (taskId: string) => {
+    // Store the selected task in localStorage for the timer page
+    localStorage.setItem("selectedTaskForPomodoro", taskId)
+    // Navigate to timer page
+    router.push("/timer")
   }
 
   // Calculate stats
@@ -280,7 +289,7 @@ export default function TasksPage() {
                   task={task}
                   project={projects.find((p) => p.id === task.proyectoId)}
                   onComplete={handleTaskComplete}
-                  onPomodoroStart={() => {}} // Placeholder for now
+                  onPomodoroStart={handlePomodoroStart}
                   onEdit={setEditingTask}
                   onDelete={handleDeleteTask}
                   isActive={false}

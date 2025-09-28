@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Clock, Timer, BarChart3, Filter, Download, Trash2 } from "lucide-react"
 import { TimeTracker } from "@/components/time-tracker"
+import { NavigationHeader } from "@/components/navigation-header"
+import { AuthGuard } from "@/components/auth-guard"
 import { useLocalStorage } from "@/hooks/use-local-storage"
 
 interface Task {
@@ -161,212 +163,219 @@ export default function TimeTrackingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-primary">Seguimiento de Tiempo</h1>
-            <p className="text-muted-foreground">Analiza tu productividad y gestiona tu tiempo</p>
-          </div>
-          <Button onClick={exportData} variant="outline">
-            <Download className="w-4 h-4 mr-2" />
-            Exportar CSV
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Time Tracker */}
-          <div className="lg:col-span-1">
-            <TimeTracker
-              tasks={tasks}
-              projects={projects}
-              onSessionComplete={(session) => setSessions((prev) => [...prev, session])}
-            />
-          </div>
-
-          {/* Analytics */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-accent" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Tiempo Total</p>
-                      <p className="text-2xl font-bold">{formatDuration(totalTime)}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2">
-                    <Timer className="w-5 h-5 text-accent" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Sesiones</p>
-                      <p className="text-2xl font-bold">{totalSessions}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-accent" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Promedio</p>
-                      <p className="text-2xl font-bold">{formatDuration(averageSession)}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+    <AuthGuard>
+      <div className="min-h-screen bg-background">
+        <NavigationHeader />
+        <div className="p-6">
+          <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h1 className="text-3xl font-bold text-primary">Seguimiento de Tiempo</h1>
+                <p className="text-muted-foreground">Analiza tu productividad y gestiona tu tiempo</p>
+              </div>
+              <Button onClick={exportData} variant="outline">
+                <Download className="w-4 h-4 mr-2" />
+                Exportar CSV
+              </Button>
             </div>
 
-            {/* Filters */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Filter className="w-5 h-5" />
-                  Filtros
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <Select value={dateRange} onValueChange={setDateRange}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="today">Hoy</SelectItem>
-                      <SelectItem value="week">Esta semana</SelectItem>
-                      <SelectItem value="month">Este mes</SelectItem>
-                      <SelectItem value="all">Todo el tiempo</SelectItem>
-                    </SelectContent>
-                  </Select>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Time Tracker */}
+              <div className="lg:col-span-1">
+                <TimeTracker
+                  tasks={tasks}
+                  projects={projects}
+                  onSessionComplete={(session) => setSessions((prev) => [...prev, session])}
+                />
+              </div>
 
-                  <Select value={filterProject} onValueChange={setFilterProject}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Proyecto" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todos los proyectos</SelectItem>
-                      {projects.map((project) => (
-                        <SelectItem key={project.id} value={project.id}>
-                          {project.nombre}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              {/* Analytics */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-5 h-5 text-accent" />
+                        <div>
+                          <p className="text-sm text-muted-foreground">Tiempo Total</p>
+                          <p className="text-2xl font-bold">{formatDuration(totalTime)}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
 
-                  <Select value={filterTask} onValueChange={setFilterTask}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Tarea" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todas las tareas</SelectItem>
-                      {tasks.map((task) => (
-                        <SelectItem key={task.id} value={task.id}>
-                          {task.titulo}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2">
+                        <Timer className="w-5 h-5 text-accent" />
+                        <div>
+                          <p className="text-sm text-muted-foreground">Sesiones</p>
+                          <p className="text-2xl font-bold">{totalSessions}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
 
-                  <Select value={filterType} onValueChange={setFilterType}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Tipo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todos los tipos</SelectItem>
-                      <SelectItem value="pomodoro">Pomodoro</SelectItem>
-                      <SelectItem value="manual">Manual</SelectItem>
-                      <SelectItem value="break">Descanso</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2">
+                        <BarChart3 className="w-5 h-5 text-accent" />
+                        <div>
+                          <p className="text-sm text-muted-foreground">Promedio</p>
+                          <p className="text-2xl font-bold">{formatDuration(averageSession)}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
-              </CardContent>
-            </Card>
 
-            {/* Project Stats */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Tiempo por Proyecto</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {projectStats.map((stat) => (
-                    <div key={stat.project.id} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div>
-                        <h4 className="font-medium">{stat.project.nombre}</h4>
-                        <p className="text-sm text-muted-foreground">{stat.project.cliente}</p>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-semibold">{formatDuration(stat.time)}</div>
-                        <div className="text-sm text-muted-foreground">{stat.sessions} sesiones</div>
-                      </div>
+                {/* Filters */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Filter className="w-5 h-5" />
+                      Filtros
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <Select value={dateRange} onValueChange={setDateRange}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="today">Hoy</SelectItem>
+                          <SelectItem value="week">Esta semana</SelectItem>
+                          <SelectItem value="month">Este mes</SelectItem>
+                          <SelectItem value="all">Todo el tiempo</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      <Select value={filterProject} onValueChange={setFilterProject}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Proyecto" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Todos los proyectos</SelectItem>
+                          {projects.map((project) => (
+                            <SelectItem key={project.id} value={project.id}>
+                              {project.nombre}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                      <Select value={filterTask} onValueChange={setFilterTask}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Tarea" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Todas las tareas</SelectItem>
+                          {tasks.map((task) => (
+                            <SelectItem key={task.id} value={task.id}>
+                              {task.titulo}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                      <Select value={filterType} onValueChange={setFilterType}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Tipo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Todos los tipos</SelectItem>
+                          <SelectItem value="pomodoro">Pomodoro</SelectItem>
+                          <SelectItem value="manual">Manual</SelectItem>
+                          <SelectItem value="break">Descanso</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
 
-            {/* Recent Sessions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Sesiones Recientes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {filteredSessions.slice(0, 10).map((session) => {
-                    const task = tasks.find((t) => t.id === session.taskId)
-                    const project = projects.find((p) => p.id === session.projectId)
-                    const start = formatDateTime(session.startTime)
-
-                    return (
-                      <div key={session.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-medium text-sm">{task?.titulo || "Tarea eliminada"}</h4>
-                            <Badge variant="outline" className="text-xs">
-                              {session.type}
-                            </Badge>
+                {/* Project Stats */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Tiempo por Proyecto</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {projectStats.map((stat) => (
+                        <div key={stat.project.id} className="flex items-center justify-between p-3 border rounded-lg">
+                          <div>
+                            <h4 className="font-medium">{stat.project.nombre}</h4>
+                            <p className="text-sm text-muted-foreground">{stat.project.cliente}</p>
                           </div>
-                          <p className="text-xs text-muted-foreground">
-                            {project?.nombre || "Proyecto eliminado"} • {start.date} {start.time}
+                          <div className="text-right">
+                            <div className="font-semibold">{formatDuration(stat.time)}</div>
+                            <div className="text-sm text-muted-foreground">{stat.sessions} sesiones</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Recent Sessions */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Sesiones Recientes</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {filteredSessions.slice(0, 10).map((session) => {
+                        const task = tasks.find((t) => t.id === session.taskId)
+                        const project = projects.find((p) => p.id === session.projectId)
+                        const start = formatDateTime(session.startTime)
+
+                        return (
+                          <div key={session.id} className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h4 className="font-medium text-sm">{task?.titulo || "Tarea eliminada"}</h4>
+                                <Badge variant="outline" className="text-xs">
+                                  {session.type}
+                                </Badge>
+                              </div>
+                              <p className="text-xs text-muted-foreground">
+                                {project?.nombre || "Proyecto eliminado"} • {start.date} {start.time}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold">{formatDuration(session.duration)}</span>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => deleteSession(session.id)}
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        )
+                      })}
+
+                      {filteredSessions.length === 0 && (
+                        <div className="text-center py-8">
+                          <Timer className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                          <h3 className="text-lg font-semibold text-muted-foreground mb-2">No hay sesiones</h3>
+                          <p className="text-muted-foreground">
+                            Comienza a rastrear tu tiempo para ver estadísticas aquí
                           </p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold">{formatDuration(session.duration)}</span>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => deleteSession(session.id)}
-                            className="text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    )
-                  })}
-
-                  {filteredSessions.length === 0 && (
-                    <div className="text-center py-8">
-                      <Timer className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-muted-foreground mb-2">No hay sesiones</h3>
-                      <p className="text-muted-foreground">Comienza a rastrear tu tiempo para ver estadísticas aquí</p>
+                      )}
                     </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </AuthGuard>
   )
 }

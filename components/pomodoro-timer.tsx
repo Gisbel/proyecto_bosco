@@ -41,6 +41,8 @@ interface PomodoroTimerProps {
   activeTask: Task | null
   onComplete: (taskId: string) => void
   onStop: () => void
+  autoStart?: boolean // Added optional auto-start prop
+  onAutoStartComplete?: () => void // Added callback for when auto-start is handled
 }
 
 const defaultSettings: PomodoroSettings = {
@@ -48,13 +50,13 @@ const defaultSettings: PomodoroSettings = {
   shortBreakDuration: 5,
   longBreakDuration: 15,
   longBreakInterval: 4,
-  autoStartBreaks: false,
+  autoStartBreaks: true,
   autoStartPomodoros: false,
   soundEnabled: true,
   notificationsEnabled: true,
 }
 
-export function PomodoroTimer({ activeTask, onComplete, onStop }: PomodoroTimerProps) {
+export function PomodoroTimer({ activeTask, onComplete, onStop, autoStart, onAutoStartComplete }: PomodoroTimerProps) {
   const [settings, setSettings] = useLocalStorage<PomodoroSettings>("pomodoroSettings", defaultSettings)
   const [timeLeft, setTimeLeft] = useState(settings.workDuration * 60)
   const [isRunning, setIsRunning] = useState(false)
@@ -121,6 +123,17 @@ export function PomodoroTimer({ activeTask, onComplete, onStop }: PomodoroTimerP
     }
   }, [timeLeft, isRunning])
 
+  useEffect(() => {
+    if (autoStart && activeTask && !isRunning && !isBreak) {
+      // Request notification permission
+      if (settings.notificationsEnabled && "Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission()
+      }
+      setIsRunning(true)
+      onAutoStartComplete?.()
+    }
+  }, [autoStart, activeTask, isRunning, isBreak, settings.notificationsEnabled, onAutoStartComplete])
+
   const handleTimerComplete = () => {
     setIsRunning(false)
 
@@ -158,10 +171,7 @@ export function PomodoroTimer({ activeTask, onComplete, onStop }: PomodoroTimerP
           : settings.shortBreakDuration * 60
       setTimeLeft(breakTime)
 
-      // Auto-start break if enabled
-      if (settings.autoStartBreaks) {
-        setIsRunning(true)
-      }
+      setIsRunning(true)
     } else {
       // Break completed
       setIsBreak(false)
