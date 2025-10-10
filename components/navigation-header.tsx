@@ -2,8 +2,9 @@
 
 import { useRouter, usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, LogOut, User } from "lucide-react"
+import { ArrowLeft, LogOut, User, Moon, Sun } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
+import { useTheme } from "@/contexts/theme-context"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +18,7 @@ export function NavigationHeader() {
   const router = useRouter()
   const pathname = usePathname()
   const { user, logout } = useAuth()
+  const { theme, toggleTheme } = useTheme()
 
   const canGoBack = pathname !== "/"
 
@@ -47,25 +49,34 @@ export function NavigationHeader() {
   }
 
   return (
-    <div className="flex items-center justify-between p-4 border-b border-border bg-background">
-      <div className="flex items-center gap-4">
+    <div className="flex items-center justify-between p-3 md:p-4 border-b border-border bg-background">
+      <div className="flex items-center gap-2 md:gap-4 min-w-0">
         {canGoBack && (
-          <Button variant="ghost" size="sm" onClick={() => router.back()} className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.back()}
+            className="flex items-center gap-1 md:gap-2 shrink-0"
+          >
             <ArrowLeft className="w-4 h-4" />
-            Atrás
+            <span className="hidden sm:inline">Atrás</span>
           </Button>
         )}
-        <h1 className="text-xl font-semibold text-foreground">{getPageTitle()}</h1>
+        <h1 className="text-base md:text-xl font-semibold text-foreground truncate">{getPageTitle()}</h1>
       </div>
 
-      <div className="flex items-center gap-2">
-        <span className="text-sm text-muted-foreground hidden sm:block">Bienvenido, {user?.nombre}</span>
+      <div className="flex items-center gap-1 md:gap-2 shrink-0">
+        <span className="text-sm text-muted-foreground hidden lg:block">Bienvenido, {user?.nombre}</span>
+
+        <Button variant="ghost" size="sm" onClick={toggleTheme} className="shrink-0">
+          {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+        </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" className="flex items-center gap-2 shrink-0">
               <User className="w-4 h-4" />
-              <span className="hidden sm:block">{user?.nombre}</span>
+              <span className="hidden md:block">{user?.nombre}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">

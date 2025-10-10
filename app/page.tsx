@@ -133,7 +133,7 @@ export default function Dashboard() {
     <AuthGuard>
       <div className="min-h-screen bg-background">
         <NavigationHeader />
-        <div className="flex">
+        <div className="flex flex-col lg:flex-row">
           {/* Sidebar */}
           <ProjectSidebar
             projects={projects}
@@ -143,13 +143,13 @@ export default function Dashboard() {
           />
 
           {/* Main Content */}
-          <div className="flex-1 p-6">
+          <div className="flex-1 p-4 md:p-6 lg:ml-0">
             {/* Header */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
+            <div className="mb-6 md:mb-8">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
                 <div>
-                  <h1 className="text-3xl font-bold text-primary">Dashboard</h1>
-                  <p className="text-muted-foreground">
+                  <h1 className="text-2xl md:text-3xl font-bold text-primary">Dashboard</h1>
+                  <p className="text-sm md:text-base text-muted-foreground">
                     {new Date().toLocaleDateString("es-ES", {
                       weekday: "long",
                       year: "numeric",
@@ -160,7 +160,7 @@ export default function Dashboard() {
                 </div>
                 <Button
                   onClick={() => setShowTaskForm(true)}
-                  className="bg-accent hover:bg-accent/90 text-accent-foreground"
+                  className="bg-accent hover:bg-accent/90 text-accent-foreground w-full sm:w-auto"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Nueva Tarea
@@ -168,14 +168,14 @@ export default function Dashboard() {
               </div>
 
               {/* Daily Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
                 <Card>
-                  <CardContent className="p-4">
+                  <CardContent className="p-3 md:p-4">
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-5 h-5 text-accent" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">Tareas Completadas</p>
-                        <p className="text-2xl font-bold">
+                      <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-accent shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-xs md:text-sm text-muted-foreground">Tareas Completadas</p>
+                        <p className="text-xl md:text-2xl font-bold">
                           {completedTasks}/{todayTasks.length}
                         </p>
                       </div>
@@ -184,24 +184,24 @@ export default function Dashboard() {
                 </Card>
 
                 <Card>
-                  <CardContent className="p-4">
+                  <CardContent className="p-3 md:p-4">
                     <div className="flex items-center gap-2">
-                      <Timer className="w-5 h-5 text-accent" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">Pomodoros</p>
-                        <p className="text-2xl font-bold">{totalPomodoros}</p>
+                      <Timer className="w-4 h-4 md:w-5 md:h-5 text-accent shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-xs md:text-sm text-muted-foreground">Pomodoros</p>
+                        <p className="text-xl md:text-2xl font-bold">{totalPomodoros}</p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
                 <Card>
-                  <CardContent className="p-4">
+                  <CardContent className="p-3 md:p-4">
                     <div className="flex items-center gap-2">
-                      <Clock className="w-5 h-5 text-accent" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">Tiempo Total</p>
-                        <p className="text-2xl font-bold">
+                      <Clock className="w-4 h-4 md:w-5 md:h-5 text-accent shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-xs md:text-sm text-muted-foreground">Tiempo Total</p>
+                        <p className="text-xl md:text-2xl font-bold">
                           {Math.floor(totalTime / 60)}h {totalTime % 60}m
                         </p>
                       </div>
@@ -210,11 +210,11 @@ export default function Dashboard() {
                 </Card>
 
                 <Card>
-                  <CardContent className="p-4">
+                  <CardContent className="p-3 md:p-4">
                     <div className="flex items-center gap-2">
-                      <BarChart3 className="w-5 h-5 text-accent" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">Productividad</p>
+                      <BarChart3 className="w-4 h-4 md:w-5 md:h-5 text-accent shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs md:text-sm text-muted-foreground">Productividad</p>
                         <Progress value={(completedTasks / Math.max(todayTasks.length, 1)) * 100} className="mt-1" />
                       </div>
                     </div>
@@ -224,13 +224,13 @@ export default function Dashboard() {
             </div>
 
             {/* Filters */}
-            <div className="flex gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-4 md:mb-6">
               <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-muted-foreground" />
+                <Filter className="w-4 h-4 text-muted-foreground shrink-0" />
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="px-3 py-1 border border-border rounded-md bg-background text-foreground"
+                  className="flex-1 sm:flex-none px-3 py-2 border border-border rounded-md bg-background text-foreground text-sm"
                 >
                   <option value="all">Todos los estados</option>
                   <option value="pendiente">Pendiente</option>
@@ -241,7 +241,7 @@ export default function Dashboard() {
             </div>
 
             {/* Tasks Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {filteredTasks.map((task) => (
                 <TaskCard
                   key={task.id}
@@ -270,7 +270,7 @@ export default function Dashboard() {
           </div>
 
           {/* Pomodoro Timer Sidebar */}
-          <div className="w-80 border-l border-border bg-card">
+          <div className="hidden xl:block w-80 border-l border-border bg-card">
             <PomodoroTimer
               activeTask={activeTask ? tasks.find((t) => t.id === activeTask) : null}
               onComplete={handlePomodoroComplete}

@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import {
   FolderOpen,
   Plus,
@@ -16,6 +17,7 @@ import {
   Archive,
   Timer,
   User,
+  Menu,
 } from "lucide-react"
 import { ProjectForm } from "./project-form"
 import Link from "next/link"
@@ -39,6 +41,7 @@ interface ProjectSidebarProps {
 export function ProjectSidebar({ projects, selectedProject, onProjectSelect, onProjectsChange }: ProjectSidebarProps) {
   const [showProjectForm, setShowProjectForm] = useState(false)
   const [editingProject, setEditingProject] = useState<Project | null>(null)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const activeProjects = projects.filter((p) => p.activo)
 
@@ -76,8 +79,8 @@ export function ProjectSidebar({ projects, selectedProject, onProjectSelect, onP
     onProjectsChange(updatedProjects)
   }
 
-  return (
-    <div className="w-64 border-r border-border bg-sidebar p-4">
+  const SidebarContent = () => (
+    <div className="h-full flex flex-col">
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-sidebar-foreground mb-4">TaskFlow</h2>
 
@@ -86,48 +89,51 @@ export function ProjectSidebar({ projects, selectedProject, onProjectSelect, onP
           <Button
             variant={selectedProject === "all" ? "secondary" : "ghost"}
             className="w-full justify-start"
-            onClick={() => onProjectSelect("all")}
+            onClick={() => {
+              onProjectSelect("all")
+              setMobileMenuOpen(false)
+            }}
           >
             <Calendar className="w-4 h-4 mr-2" />
             Todas las Tareas
           </Button>
 
-          <Link href="/projects">
+          <Link href="/projects" onClick={() => setMobileMenuOpen(false)}>
             <Button variant="ghost" className="w-full justify-start">
               <FolderOpen className="w-4 h-4 mr-2" />
               Proyectos
             </Button>
           </Link>
 
-          <Link href="/tasks">
+          <Link href="/tasks" onClick={() => setMobileMenuOpen(false)}>
             <Button variant="ghost" className="w-full justify-start">
               <Calendar className="w-4 h-4 mr-2" />
               Gestión de Tareas
             </Button>
           </Link>
 
-          <Link href="/timer">
+          <Link href="/timer" onClick={() => setMobileMenuOpen(false)}>
             <Button variant="ghost" className="w-full justify-start">
               <Timer className="w-4 h-4 mr-2" />
               Timer Pomodoro
             </Button>
           </Link>
 
-          <Link href="/time-tracking">
+          <Link href="/time-tracking" onClick={() => setMobileMenuOpen(false)}>
             <Button variant="ghost" className="w-full justify-start">
               <BarChart3 className="w-4 h-4 mr-2" />
               Seguimiento de Tiempo
             </Button>
           </Link>
 
-          <Link href="/statistics">
+          <Link href="/statistics" onClick={() => setMobileMenuOpen(false)}>
             <Button variant="ghost" className="w-full justify-start">
               <BarChart3 className="w-4 h-4 mr-2" />
               Estadísticas
             </Button>
           </Link>
 
-          <Link href="/profile">
+          <Link href="/profile" onClick={() => setMobileMenuOpen(false)}>
             <Button variant="ghost" className="w-full justify-start">
               <User className="w-4 h-4 mr-2" />
               Mi Perfil
@@ -142,7 +148,7 @@ export function ProjectSidebar({ projects, selectedProject, onProjectSelect, onP
       </div>
 
       {/* Projects Section */}
-      <div>
+      <div className="flex-1 overflow-y-auto">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold text-sidebar-foreground">Proyectos</h3>
           <Button size="sm" variant="ghost" onClick={() => setShowProjectForm(true)}>
@@ -156,7 +162,10 @@ export function ProjectSidebar({ projects, selectedProject, onProjectSelect, onP
               <Button
                 variant={selectedProject === project.id ? "secondary" : "ghost"}
                 className="w-full justify-start text-left pr-8"
-                onClick={() => onProjectSelect(project.id)}
+                onClick={() => {
+                  onProjectSelect(project.id)
+                  setMobileMenuOpen(false)
+                }}
               >
                 <FolderOpen className="w-4 h-4 mr-2 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
@@ -224,6 +233,29 @@ export function ProjectSidebar({ projects, selectedProject, onProjectSelect, onP
           </div>
         </CardContent>
       </Card>
+    </div>
+  )
+
+  return (
+    <>
+      <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+        <SheetTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden fixed top-16 left-4 z-50 bg-background border border-border"
+          >
+            <Menu className="w-5 h-5" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="w-64 p-4">
+          <SidebarContent />
+        </SheetContent>
+      </Sheet>
+
+      <div className="hidden lg:block w-64 border-r border-border bg-sidebar p-4">
+        <SidebarContent />
+      </div>
 
       {/* Project Forms */}
       {showProjectForm && <ProjectForm onSubmit={handleCreateProject} onClose={() => setShowProjectForm(false)} />}
@@ -231,6 +263,6 @@ export function ProjectSidebar({ projects, selectedProject, onProjectSelect, onP
       {editingProject && (
         <ProjectForm project={editingProject} onSubmit={handleEditProject} onClose={() => setEditingProject(null)} />
       )}
-    </div>
+    </>
   )
 }
