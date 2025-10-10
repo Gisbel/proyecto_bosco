@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/router"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -53,6 +54,7 @@ export default function ProjectsPage() {
   const [editingProject, setEditingProject] = useState<Project | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [filterStatus, setFilterStatus] = useState<"all" | "active" | "archived">("all")
+  const router = useRouter()
 
   // Filter projects
   const filteredProjects = projects.filter((project) => {
@@ -73,6 +75,7 @@ export default function ProjectsPage() {
     }
     setProjects([...projects, newProject])
     setShowProjectForm(false)
+    router.push(`/projects/${newProject.id}`)
   }
 
   const handleEditProject = (projectData: any) => {
@@ -116,7 +119,7 @@ export default function ProjectsPage() {
     <AuthGuard>
       <div className="min-h-screen bg-background">
         <NavigationHeader />
-        <div className="p-6">
+        <div className="p-4 md:p-6">
           <div className="max-w-6xl mx-auto">
             {/* Header */}
             <div className="flex items-center justify-between mb-8">
@@ -176,7 +179,11 @@ export default function ProjectsPage() {
                 const isOverdue = project.fechaLimite && new Date(project.fechaLimite) < new Date()
 
                 return (
-                  <Card key={project.id} className={`relative ${!project.activo ? "opacity-75" : ""}`}>
+                  <Card
+                    key={project.id}
+                    className={`relative cursor-pointer hover:shadow-lg transition-shadow ${!project.activo ? "opacity-75" : ""}`}
+                    onClick={() => router.push(`/projects/${project.id}`)}
+                  >
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
                         <div className="flex items-start gap-2">

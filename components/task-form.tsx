@@ -68,7 +68,7 @@ export function TaskForm({ projects, task, onSubmit, onClose }: TaskFormProps) {
   const [formData, setFormData] = useState<TaskFormData>({
     titulo: task?.titulo || "",
     descripcion: task?.descripcion || "",
-    proyectoId: task?.proyectoId || "",
+    proyectoId: task?.proyectoId || (projects.length === 1 ? projects[0].id : ""),
     fechaAsignada: task?.fechaAsignada || new Date().toISOString().split("T")[0],
     prioridad: task?.prioridad || "media",
     estimatedPomodoros: task?.estimatedPomodoros || 1,
